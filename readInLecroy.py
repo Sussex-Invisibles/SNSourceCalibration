@@ -109,7 +109,7 @@ def ReadFloat(fid,fmt,Addr):
 
 def ReadDouble(fid,fmt,Addr):
 	fid.seek(Addr)
-	s = fid.readline(8)
+	s = fid.read(8)
 	s = unpack(fmt + 'd', s)
 	if(type(s) == tuple):
 		return s[0]

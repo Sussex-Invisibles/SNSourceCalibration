@@ -26,8 +26,6 @@ def readTRCFiles(file_directory, correct_offset=True):
         xRaw,ySingleRaw = lc.read_timetrace(file_directory+"/"+trcFile)
         yRaw.append(ySingleRaw)
         #xRaw[:] = [x - xRaw[0] for x in xRaw]
-        print "YRAW: "+str(ySingleRaw)
-        print "XRAW: "+str(xRaw)
     # Make sure file path is correct format
     # Correct for trigger offset in timestamps
     x = xRaw - xRaw[0]
@@ -102,6 +100,17 @@ def calcArea(x,y):
     for i in range(len(y[:,0])):
         trapz[i] = np.trapz(y[i,:],x)
     return np.mean(trapz), rms(trapz)
+
+def get_photons(volts_seconds,applied_volts):
+        """Use the integral (Vs) from the scope to get the number of photons.
+        Can accept -ve or +ve pulse
+        """
+        impedence = 50.0 
+        eV = (6.626e-34 * 3e8) / (406e-9)
+        qe = 0.34142# @ 501nm
+        gain = get_gain(applied_volts)
+        photons = np.fabs(volts_seconds) / (impedence * eV * gain * qe)
+        return photons 
 
 def calcRise(x,y):
     """Calc rise time of pulses"""
