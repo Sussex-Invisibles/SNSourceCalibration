@@ -76,7 +76,11 @@ def positive_check(y):
 def rms(alist):
     '''Calc rms of 1d array'''
     if len(alist) > 1:
-        listsum = sum((i - np.mean(alist))**2 for i in alist)
+        listsum = 0
+        for i in alist:
+            if np.isnan(i) or np.isinf(i):
+                continue
+            listsum += (i - np.nanmean(alist))**2 
         return np.sqrt(listsum/(len(alist) - 1.0))
     else:
        logging.warning("More than one item needed to calculate RMS, thus returning 0")
@@ -84,11 +88,23 @@ def rms(alist):
 
 def interpolate_threshold(x, y, thresh, rise=True, start=0):
     """Calculate the threshold crossing using a linear interpolation"""
+    if len(x)<5 or len(y)<5:
+        return np.nan 
     if rise == True:
         index_high = np.where( y > thresh )[0][start]
     else:
         index_high = np.where( y < thresh )[0][start]
     index_low = index_high - 1
+    """if x[index_high]<x[index_low]:
+        print "PRINTING"
+        for i in range(len(x)):
+            print str(x[i])+" "+str(y[i])
+    print "index_low: "+str(index_low)
+    print "index_high: "+str(index_high)
+    print "y_low: "+str(y[index_low])+" y_high: "+str(y[index_high])
+    print "x_low: "+str(x[index_low])+" x_high: "+str(x[index_high])
+    print "dydx: "+str((y[index_high] - y[index_low])/(x[index_high]-x[index_low]))
+    """
     dydx = (y[index_high] - y[index_low])/(x[index_high]-x[index_low])
     time = x[index_low] + (thresh - y[index_low]) / dydx
     #print "x0 = %1.1f\t(thresh - y0) = %1.1f\tdydx = %1.3f\ttime = %1.1f\tdx = %1.1f" % (x[index_low], (thresh - y[index_low]), dydx, time, (x[index_high] - x[index_low])) 
@@ -172,7 +188,9 @@ def calcWidth(x,y):
             first = interpolate_threshold(x[:m_index+1], y[i,:m_index+1], thresh, rise=True)
             second = interpolate_threshold(x[m_index-1:], y[i,m_index-1:], thresh, rise=False)
             width[i] = second - first
-        return np.mean(width), rms(width)
+            if np.isinf(width[i]):
+                width[i]=np.nan
+        return np.nanmean(width), rms(width)
     else:
         for i in range(len(y[:,0])):
             m = min(y[i,:])
@@ -181,7 +199,9 @@ def calcWidth(x,y):
             first = interpolate_threshold(x[:m_index+1], y[i,:m_index+1], thresh, rise=False)
             second = interpolate_threshold(x[m_index-1:], y[i,m_index-1:], thresh, rise=True)
             width[i] = second - first
-        return np.mean(width), rms(width)
+            if np.isinf(width[i]):
+                width[i]=np.nan
+        return np.nanmean(width), rms(width)
 
 def calcPeak(x,y):
     """Calc min amplitude of pulses"""
