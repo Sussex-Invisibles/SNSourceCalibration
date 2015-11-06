@@ -43,8 +43,8 @@ plt.title("dacValues vs peakValues")
 plt.savefig("peaks.png")
 
 plt.figure(1)
-#plt.errorbar(dacValues,FWHMValues,yerr=FWHMErrors)
-#plt.title("dacValues vs FWHMValues")
+plt.errorbar(dacValues,FWHMValues,yerr=FWHMErrors)
+plt.title("dacValues vs FWHMValues")
 plt.savefig("FWHM.png")
 
 plt.figure(2)

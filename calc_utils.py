@@ -37,7 +37,11 @@ def readTRCFiles(file_directory, correct_offset=True):
     y = np.zeros( (count, len(xRaw)) )
     for i, ent in enumerate(yRaw):
         if correct_offset == True:
-            y[i, :] = ent  - np.mean(ent[0:20])
+            try:
+                y[i, :] = ent  - np.mean(ent[0:20])
+            except ValueError:
+                print ent
+                print "Background Mean: "+str(np.mean(ent[0:20]))
         else:
             y[i, :] = ent  
     return x,y
@@ -88,23 +92,19 @@ def rms(alist):
 
 def interpolate_threshold(x, y, thresh, rise=True, start=0):
     """Calculate the threshold crossing using a linear interpolation"""
-    if len(x)<5 or len(y)<5:
+    if len(x)<10 or len(y)<10:
         return np.nan 
     if rise == True:
-        index_high = np.where( y > thresh )[0][start]
+        try:
+            index_high = np.where( y > thresh )[0][start]
+        except IndexError:
+            return np.nan
     else:
-        index_high = np.where( y < thresh )[0][start]
+        try:
+            index_high = np.where( y < thresh )[0][start]
+        except  IndexError:
+            return np.nan
     index_low = index_high - 1
-    """if x[index_high]<x[index_low]:
-        print "PRINTING"
-        for i in range(len(x)):
-            print str(x[i])+" "+str(y[i])
-    print "index_low: "+str(index_low)
-    print "index_high: "+str(index_high)
-    print "y_low: "+str(y[index_low])+" y_high: "+str(y[index_high])
-    print "x_low: "+str(x[index_low])+" x_high: "+str(x[index_high])
-    print "dydx: "+str((y[index_high] - y[index_low])/(x[index_high]-x[index_low]))
-    """
     dydx = (y[index_high] - y[index_low])/(x[index_high]-x[index_low])
     time = x[index_low] + (thresh - y[index_low]) / dydx
     #print "x0 = %1.1f\t(thresh - y0) = %1.1f\tdydx = %1.3f\ttime = %1.1f\tdx = %1.1f" % (x[index_low], (thresh - y[index_low]), dydx, time, (x[index_high] - x[index_low])) 

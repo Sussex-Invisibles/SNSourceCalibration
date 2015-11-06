@@ -91,7 +91,7 @@ def plot_fall(x, y, name, scale = 1e9):
             hist.Fill((low - high)*scale)
     return hist, fall, fallErr
 
-def plot_width(x, y, name, scale = 1):
+def plot_width(x, y, name, scale = 1e8):
     """Calc and plot FWHM of pulses"""
     width, widthErr = calc.calcWidth(x,y)
     print width, widthErr
@@ -105,8 +105,8 @@ def plot_width(x, y, name, scale = 1):
             m = max(y[i,:])
             m_index = np.where(y[i,:] == m)[0][0]
             thresh = m*0.5
-            first = calc.interpolate_threshold(x[:m_index+1], y[i,:m_index+1], thresh, rise=True)
-            second = calc.interpolate_threshold(x[m_index-1:], y[i,m_index-1:], thresh, rise=False)
+            first = calc.interpolate_threshold(x[:m_index], y[i,:m_index], thresh, rise=True)
+            second = calc.interpolate_threshold(x[m_index:], y[i,m_index:], thresh, rise=False)
             hist.Fill((second - first)*scale)
     else:
         for i in range(len(y[:,0])-1):
@@ -114,8 +114,9 @@ def plot_width(x, y, name, scale = 1):
             m_index = np.where(y[i,:] == m)[0][0]
             thresh = m*0.5
             #print "Negative Pulse Threshold is: "+str(thresh)
-            first = calc.interpolate_threshold(x[:m_index+1], y[i,:m_index+1], thresh, rise=False)
-            second = calc.interpolate_threshold(x[m_index-1:], y[i,m_index-1:], thresh, rise=True)
+            first = calc.interpolate_threshold(x[:m_index], y[i,:m_index], thresh, rise=False)
+            second = calc.interpolate_threshold(x[m_index:], y[i,m_index:], thresh, rise=True)
+            print "Width: "+str(second-first)
             hist.Fill((second - first)*scale)
     return hist, width, widthErr
 
