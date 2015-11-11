@@ -77,6 +77,15 @@ def positive_check(y):
     else:
         return False
 
+def nanmean(list):
+    mean = 0.0
+    counter = 0
+    for num in list:
+        if not  np.isnan(num):
+            mean += num
+            counter+= 1
+    return mean/counter
+
 def rms(alist):
     '''Calc rms of 1d array'''
     if len(alist) > 1:
@@ -84,7 +93,7 @@ def rms(alist):
         for i in alist:
             if np.isnan(i) or np.isinf(i):
                 continue
-            listsum += (i - np.nanmean(alist))**2 
+            listsum += (i - nanmean(alist))**2 
         return np.sqrt(listsum/(len(alist) - 1.0))
     else:
        logging.warning("More than one item needed to calculate RMS, thus returning 0")
