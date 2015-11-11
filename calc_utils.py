@@ -199,7 +199,7 @@ def calcWidth(x,y):
             width[i] = second - first
             if np.isinf(width[i]):
                 width[i]=np.nan
-        return np.nanmean(width), rms(width)
+        return nanmean(width), rms(width)
     else:
         for i in range(len(y[:,0])):
             m = min(y[i,:])
@@ -210,7 +210,7 @@ def calcWidth(x,y):
             width[i] = second - first
             if np.isinf(width[i]):
                 width[i]=np.nan
-        return np.nanmean(width), rms(width)
+        return nanmean(width), rms(width)
 
 def calcPeak(x,y):
     """Calc min amplitude of pulses"""
