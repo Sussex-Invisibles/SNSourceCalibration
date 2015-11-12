@@ -43,7 +43,10 @@ def readTRCFiles(file_directory, correct_offset=True):
                 print ent
                 print "Background Mean: "+str(np.mean(ent[0:20]))
         else:
-            y[i, :] = ent  
+            try:
+                y[i, :] = ent 
+            except ValueError:
+                print ent
     return x,y
 
 def readPickleChannel(file, channel_no, correct_offset=True):

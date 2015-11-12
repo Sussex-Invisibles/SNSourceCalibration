@@ -116,7 +116,6 @@ def plot_width(x, y, name, scale = 1e8):
             #print "Negative Pulse Threshold is: "+str(thresh)
             first = calc.interpolate_threshold(x[:m_index], y[i,:m_index], thresh, rise=False)
             second = calc.interpolate_threshold(x[m_index:], y[i,m_index:], thresh, rise=True)
-            print "Width: "+str(second-first)
             hist.Fill((second - first)*scale)
     return hist, width, widthErr
 

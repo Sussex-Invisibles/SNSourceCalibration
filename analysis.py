@@ -4,6 +4,15 @@ import os
 import sys
 import ROOT
 import matplotlib.pyplot as plt
+import numpy as np
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 dacValues = []
 peakValues = []
 peakErrors = []
@@ -13,13 +22,17 @@ areaValues = []
 areaErrors = []
 topFolder = sys.argv[1]
 os.chdir(topFolder)
-folders =  os.listdir("dataset")
-print folders
+items  =  os.listdir(".")
+folders = []
+for dacfolder in items:
+    if os.path.isdir(dacfolder) and is_number(dacfolder):
+        folders.append(dacfolder)
+
 folders.sort(key=int)
 print folders
 for dacFolder in folders:
     print "THIS IS DAC FOLDER: "+str(dacFolder)
-    x,y = calc_utils.readTRCFiles(os.path.join("dataset",dacFolder))
+    x,y = calc_utils.readTRCFiles(dacFolder,False)
     output = ROOT.TFile(dacFolder+".root","recreate")
     areaHisto, area, areaErr = root_utils.plot_area(x,y,"area")
     widthHisto, width, widthErr = root_utils.plot_width(x,y,"FWHM")
@@ -49,6 +62,13 @@ plt.savefig("FWHM.png")
 
 plt.figure(2)
 plt.errorbar(dacValues,areaValues,yerr=areaErrors)
+fitWeights = []
+for iError in range(len(areaErrors)):
+    fitWeights.append(1.0/np.sqrt(areaErrors[iError]**2))
+fitValues = np.polyfit(dacValues,areaValues,1,w=fitWeights)
+poly = np.poly1d(fitValues)
+plt.plot(dacValues,poly(dacValues))
 plt.title("dacValues vs areaValues")
 plt.savefig("area.png")
+
 #print "Number of Photons: "+str(calc_utils.get_photons(area,0.5))
