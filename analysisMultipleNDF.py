@@ -67,22 +67,50 @@ def analyseVariousNDFs(topFolder):
 topFolder = sys.argv[1]
 NDFVals,dacValues,peaks,peaksErrors,areas,areaErrors = analyseVariousNDFs(topFolder)
 print "NOW MAKING PLOTS"
+
+plt.figure(1)
+for i in range(len(NDFVals)):
+    peakOutput = open(str(NDFVals[i])+"peak.txt","w")
+    areaOutput = open(str(NDFVals[i])+"area.txt","w")
+    for j in range(len(dacValues[i])):
+        arealine = str(dacValues[i][j])+" "+str(areas[i][j])+" "+str(areaErrors[i][j])+"\n"
+        peakline = str(dacValues[i][j])+" "+str(peaks[i][j])+" "+str(peaksErrors[i][j])+"\n"
+        peakOutput.write(peakline)
+        areaOutput.write(arealine)
+    peakOutput.close()
+    areaOutput.close()
+    plt.errorbar(dacValues[i],np.fabs(areas[i]),yerr=areaErrors[i],label="DATA: "+str(NDFVals[i]))
+    fitWeights = []
+    for iError in range(len(areaErrors[i])):
+        fitWeights.append(1.0/np.sqrt(areaErrors[i][iError]**2))
+        lower_index = 0
+        upper_index = 0
+        for index in range(len(dacValues[i])):
+            if dacValues[i][index]>15000:
+                lower_index = index
+                break
+        for index in range(len(dacValues[i])-1,0,-1):
+            if dacValues[i][index]<22000:
+                upper_index = index
+                break
+        xVals = dacValues[i][lower_index:upper_index]
+        print xVals
+        yVals = np.fabs(areas[i][lower_index:upper_index])
+        print yVals
+        weights = fitWeights[lower_index:upper_index]
+        print weights
+    fitValues = np.polyfit(xVals,yVals,1,w=weights)
+    poly = np.poly1d(fitValues)
+    plt.plot(dacValues[i],poly(dacValues[i]),label="Fit NDF  "+str(NDFVals[i]))
+plt.title("dacValues vs areaValues")
+plt.legend(loc="lower right")
+plt.show()
+plt.savefig("NDFarea.png")
+
 plt.figure(0)
 for i in range(len(NDFVals)):
     plt.errorbar(dacValues[i],peaks[i],yerr=peaksErrors[i],label="DATA: "+str(NDFVals[i]))
 plt.title("dacValues vs peakValues")
 plt.legend()
+plt.show()
 plt.savefig("NDFpeaks.png")
-
-plt.figure(1)
-for i in range(len(NDFVals)):
-    plt.errorbar(dacValues[i],np.fabs(areas[i]),yerr=areaErrors[i],label="DATA: "+str(NDFVals[i]))
-    fitWeights = []
-    for iError in range(len(areaErrors[i])):
-        fitWeights.append(1.0/np.sqrt(areaErrors[i][iError]**2))
-    fitValues = np.polyfit(dacValues[i],np.fabs(areas[i]),1,w=fitWeights)
-    poly = np.poly1d(fitValues)
-    plt.plot(dacValues[i],poly(dacValues[i]),label="Fit NDF  "+str(NDFVals[i]))
-plt.title("dacValues vs areaValues")
-plt.legend(loc="lower right")
-plt.savefig("NDFarea.png")
