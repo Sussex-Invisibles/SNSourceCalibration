@@ -49,6 +49,21 @@ for dacFolder in folders:
     areaErrors.append(areaErr)
     dacValues.append(float(dacFolder))
 
+areaFile = open("areas.txt","w")
+peakFile = open("peaks.txt","w")
+widthFile = open("FWHM.txt","w")
+
+for i in range(len(areaValues)):
+    areaLine = str(dacValues[i])+" "+str(areaValues[i])+" "+str(areaErrors[i])+"\n"
+    peakLine = str(dacValues[i])+" "+str(peakValues[i])+" "+str(peakErrors[i])+"\n"
+    FWHMLine = str(dacValues[i])+" "+str(FWHMValues[i])+" "+str(FWHMErrors[i])+"\n"
+    areaFile.write(areaLine)
+    peakFile.write(peakLine)
+    FWHMFile.write(FWHMLine)
+
+areaFile.close()
+peakFile.close()
+FWHMFile.close()
 
 plt.figure(0)
 plt.errorbar(dacValues,peakValues,yerr=peakErrors)
