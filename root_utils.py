@@ -31,7 +31,7 @@ def plot_area(x, y, name, scale = 1e9):
     hist = ROOT.TH1D("%s" % name,"%s" % name, len(bins), bins[0], bins[-1])
     hist.SetTitle("Pulse integral")
     hist.GetXaxis().SetTitle("Integrated area (V.ns)")
-    for i in range(len(y[:,0])-1):
+    for i in range(len(y[:,0])):
         hist.Fill(np.trapz(y[i,:],x)*scale)
     return hist, area, areaErr
 
@@ -91,7 +91,7 @@ def plot_fall(x, y, name, scale = 1e9):
             hist.Fill((low - high)*scale)
     return hist, fall, fallErr
 
-def plot_width(x, y, name, scale = 1e8):
+def plot_width(x, y, name, scale = 1e9):
     """Calc and plot FWHM of pulses"""
     width, widthErr = calc.calcWidth(x,y)
     print width, widthErr

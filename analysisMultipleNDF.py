@@ -22,6 +22,8 @@ def analyseVariousNDFs(topFolder):
     for ndfItem in ndfItems:
         if os.path.isdir(os.path.join(os.getcwd(),ndfItem)):
             NDFVals.append(ndfItem)
+
+    print NDFVals
     dacValuesVarious = []
     peaks = []
     peaksErrors = []
@@ -31,7 +33,7 @@ def analyseVariousNDFs(topFolder):
     areasErrors = []
     for ndfFolder in NDFVals:
         folders = []
-        ndfPath = os.path.join(os.getcwd(),ndfFolder)
+        ndfPath = os.path.join(os.getcwd(),ndfFolder,"dataset")
         items = os.listdir(ndfPath)
         for dacfolder in items:
             if os.path.isdir(os.path.join(ndfPath,dacfolder)) and is_number(dacfolder):
@@ -50,6 +52,7 @@ def analyseVariousNDFs(topFolder):
             areaHisto, area, areaErr = root_utils.plot_area(x,y,"area")
             widthHisto, width, widthErr = root_utils.plot_width(x,y,"FWHM")
             peakHisto, meanPeak, peakErr = root_utils.plot_peak(x,y,"peak")
+            #numSqrt = np.sqrt(len(os.listdir(os.path.join(ndfPath,dacFolder))))
             peakValues.append(meanPeak)
             peakErrors.append(peakErr)
             FWHMValues.append(width)

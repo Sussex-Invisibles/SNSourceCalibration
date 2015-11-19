@@ -37,6 +37,7 @@ for dacFolder in folders:
     areaHisto, area, areaErr = root_utils.plot_area(x,y,"area")
     widthHisto, width, widthErr = root_utils.plot_width(x,y,"FWHM")
     peakHisto, meanPeak, peakErr = root_utils.plot_peak(x,y,"peak")
+    #numSqrt = np.sqrt(len(os.listdir(dacFolder)))
     areaHisto.Write()
     widthHisto.Write()
     peakHisto.Write()
@@ -59,11 +60,11 @@ for i in range(len(areaValues)):
     FWHMLine = str(dacValues[i])+" "+str(FWHMValues[i])+" "+str(FWHMErrors[i])+"\n"
     areaFile.write(areaLine)
     peakFile.write(peakLine)
-    FWHMFile.write(FWHMLine)
+    widthFile.write(FWHMLine)
 
 areaFile.close()
 peakFile.close()
-FWHMFile.close()
+widthFile.close()
 
 plt.figure(0)
 plt.errorbar(dacValues,peakValues,yerr=peakErrors)
