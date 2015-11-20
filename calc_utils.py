@@ -130,26 +130,26 @@ def calcArea(x,y):
     return np.mean(trapz), rms(trapz)
 
 def get_gain(applied_volts):
-        """Get the gain from the applied voltage.
-           Constants taken from pmt gain calibration
-           taken July 2015 at site.
-           See smb://researchvols.uscs.susx.ac.uk/research/neutrino_lab/SnoPlus/PmtCal.
-        """
-     a, b, c = 2.432, 12.86, -237.5
-     #a, b, c = 545.1, 13.65, 0
-     gain = a*np.exp(b*applied_volts) + c
-     return gain
+    """Get the gain from the applied voltage.
+       Constants taken from pmt gain calibration
+       taken July 2015 at site.
+       See smb://researchvols.uscs.susx.ac.uk/research/neutrino_lab/SnoPlus/PmtCal.
+    """
+    a, b, c = 2.432, 12.86, -237.5
+    #a, b, c = 545.1, 13.65, 0
+    gain = a*np.exp(b*applied_volts) + c
+    return gain
 
 def get_photons(volts_seconds,applied_volts):
-        """Use the integral (Vs) from the scope to get the number of photons.
-        Can accept -ve or +ve pulse
-        """
-        impedence = 50.0 
-        eV = (6.626e-34 * 3e8) / (406e-9)
-        qe = 0.34142# @ 501nm
-        gain = get_gain(applied_volts)
-        photons = np.fabs(volts_seconds) / (impedence * eV * gain * qe)
-        return photons 
+    """Use the integral (Vs) from the scope to get the number of photons.
+    Can accept -ve or +ve pulse
+    """
+    impedence = 50.0 
+    eV = (6.626e-34 * 3e8) / (406e-9)
+    qe = 0.34142# @ 501nm
+    gain = get_gain(applied_volts)
+    photons = np.fabs(volts_seconds) / (impedence * eV * gain * qe)
+    return photons 
 
 def calcRise(x,y):
     """Calc rise time of pulses"""
