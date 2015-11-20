@@ -10,6 +10,10 @@ def linear_func(x, m, c):
     return m*x+c
 
 fileArray = []
+labelArray = []
+#labelArray.append("First Name here")
+#labelArray.append("Second name here")
+#labelArray.append(" and so on")
 doFit = []
 lowFitLimits = []
 upFitLimits = []
@@ -53,11 +57,11 @@ for iteration in range(len(fileArray)):
     print fileArray[iteration]
     print os.path.basename(fileArray[iteration])
     plt.figure(0)
-    plt.errorbar(xVals,np.multiply(totYVals[iteration],-1),yerr=totYErr[iteration],label=str((fileArray[iteration])))
+    plt.errorbar(xVals,np.multiply(totYVals[iteration],-1),yerr=totYErr[iteration],label=str((labelArray[iteration])))
     negyVals = np.multiply(yVals,-1.0)
     #print np.divide(yErrs,yVals)
     plt.figure(1)
-    plt.plot(xVals,np.divide(totYErr[iteration],negyVals),label="Error over area: "+str(fileArray[iteration]))
+    plt.plot(xVals,np.divide(totYErr[iteration],negyVals),label="Error over area: "+str(labelArray[iteration]))
     if doFit[iteration]:
         plt.figure(0)
         fitWeights = []
