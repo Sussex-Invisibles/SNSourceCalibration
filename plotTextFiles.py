@@ -85,7 +85,7 @@ for iteration in range(len(fileArray)):
         fitValues = fitResults[0]
         chi_squared = fitResults[1]
         poly = np.poly1d(fitValues)
-        plt.plot(xVals[lowIndex:upIndex],poly(xVals[lowIndex:upIndex]),label="Fit to: "+os.path.basename(fileArray[iteration]))
+        plt.plot(xVals[lowIndex:upIndex],poly(xVals[lowIndex:upIndex]),label="Fit to: "+(labelArray[iteration]))
         reduced_chi_squared = chi_squared/(len(xVals[lowIndex:upIndex])-len(fitValues))
         print "Parameters for fit to: "+str(os.path.basename(fileArray[iteration]))+"    "+str(fitValues)
         print "Number of Degrees of Freedom is: "+str(len(xVals[lowIndex:upIndex])-len(fitValues))
