@@ -13,6 +13,8 @@ fileArray = []
 doFit = []
 lowFitLimits = []
 upFitLimits = []
+dataPlot = plt.figure(0)
+errorPlot = plt.figure(1)
 afterFit = False
 afterFitNum  = 999999999 
 for i in range(1,len(sys.argv)):
@@ -89,8 +91,7 @@ for iteration in range(len(fileArray)):
 
 plt.figure(0)
 plt.legend(loc="lower right")
-plt.show()
-
 plt.figure(1)
 plt.legend(loc="lower right")
 plt.show()
+

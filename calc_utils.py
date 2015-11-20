@@ -129,6 +129,17 @@ def calcArea(x,y):
         trapz[i] = np.trapz(y[i,:],x)
     return np.mean(trapz), rms(trapz)
 
+def get_gain(applied_volts):
+        """Get the gain from the applied voltage.
+           Constants taken from pmt gain calibration
+           taken July 2015 at site.
+           See smb://researchvols.uscs.susx.ac.uk/research/neutrino_lab/SnoPlus/PmtCal.
+        """
+     a, b, c = 2.432, 12.86, -237.5
+     #a, b, c = 545.1, 13.65, 0
+     gain = a*np.exp(b*applied_volts) + c
+     return gain
+
 def get_photons(volts_seconds,applied_volts):
         """Use the integral (Vs) from the scope to get the number of photons.
         Can accept -ve or +ve pulse
