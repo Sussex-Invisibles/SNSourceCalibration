@@ -97,7 +97,7 @@ def rms(alist):
             if np.isnan(i) or np.isinf(i):
                 continue
             listsum += (i - nanmean(alist))**2 
-        return np.sqrt(listsum/(len(alist) - 1.0))
+        return np.sqrt(listsum/(len(alist) - 1.0))/np.sqrt(float(len(alist)))
     else:
        logging.warning("More than one item needed to calculate RMS, thus returning 0")
        return 0.
