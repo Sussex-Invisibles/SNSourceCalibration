@@ -24,16 +24,34 @@ def waveform_to_hist(timeform, waveform, data_units, title="hist"):
     histogram.GetYaxis().SetTitle(data_units[1])
     return histogram
 
-def plot_area(x, y, name, scale = 1e9):
+def plot_area(x, y, name, scale = 1e9,lower_limit=0.0,upper_limit=0.0):
     """Calc area of pulses"""
-    area, areaErr = calc.calcArea(x,y)
+    area, areaErr, areaErrorOnMean = calc.calcArea(x,y,lower_limit,upper_limit)
     bins = np.arange((area-8*areaErr)*scale, (area+8*areaErr)*scale, (areaErr/5)*scale)
     hist = ROOT.TH1D("%s" % name,"%s" % name, len(bins), bins[0], bins[-1])
     hist.SetTitle("Pulse integral")
     hist.GetXaxis().SetTitle("Integrated area (V.ns)")
-    for i in range(len(y[:,0])):
-        hist.Fill(np.trapz(y[i,:],x)*scale)
-    return hist, area, areaErr
+    if upper_limit == lower_limit:
+        for i in range(len(y[:,0])):
+            hist.Fill(np.trapz(y[i,:],x)*scale)
+        return hist, area, areaErr
+    else:
+        lower_index =  0
+        upper_index = 0
+        
+        for i in range(len(y[:,0])):
+            for j in range(len(x)):
+                if x[j]> lower_limit:
+                    lower_index = j
+                    break
+
+            for j in range(len(x)-1,0,-1):
+                if x[j]< upper_limit:
+                    upper_index = j
+                    break
+        for i in range(len(y[:,0])):
+            hist.Fill(np.trapz(y[i,lower_index:upper_index],x[lower_index:upper_index])*scale)
+        return hist, area, areaErr
 
 def plot_rise(x, y, name, scale = 1e9):
     """Calc and plot rise time of pulses"""
@@ -93,8 +111,7 @@ def plot_fall(x, y, name, scale = 1e9):
 
 def plot_width(x, y, name, scale = 1e9):
     """Calc and plot FWHM of pulses"""
-    width, widthErr = calc.calcWidth(x,y)
-    print width, widthErr
+    width, widthErr, widthErrOnMean = calc.calcWidth(x,y)
     bins = np.arange((width-8*widthErr)*scale, (width+8*widthErr)*scale, (widthErr/5.)*scale)
     hist = ROOT.TH1D("%s" % name,"%s" % name, len(bins), bins[0], bins[-1])
     hist.SetTitle("Pulse width")

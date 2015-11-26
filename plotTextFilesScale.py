@@ -12,6 +12,10 @@ def linear_func(x, m, c):
 
 fileArray = []
 labelArray = []
+scaleArray = []
+scaleArray.append(number_for_firstNDF)
+scaleArray.append(number_for_secondNDF)
+scaleArray.append(number_for_thirdNDF)
 labelArray.append("First Name here")
 labelArray.append("Second name here")
 labelArray.append(" and so on")
@@ -59,7 +63,7 @@ for iteration in range(len(fileArray)):
     print os.path.basename(fileArray[iteration])
     print totYVals[iteration]
     plt.figure(0)
-    plt.errorbar(xVals,np.multiply(totYVals[iteration],-1),yerr=totYErr[iteration],label=str((labelArray[iteration])))
+    plt.errorbar(xVals,np.multiply(totYVals[iteration],-1*scaleArray[iteration]),yerr=totYErr[iteration],label=str((labelArray[iteration])))
     negyVals = np.multiply(totYVals[iteration],-1.0)
     #print np.divide(yErrs,yVals)
     plt.figure(1)
@@ -97,7 +101,4 @@ for iteration in range(len(fileArray)):
 
 plt.figure(0)
 plt.legend(loc="lower right")
-plt.figure(1)
-plt.legend(loc="lower right")
-plt.show()
 

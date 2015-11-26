@@ -97,6 +97,19 @@ def rms(alist):
             if np.isnan(i) or np.isinf(i):
                 continue
             listsum += (i - nanmean(alist))**2 
+        return np.sqrt(listsum/(len(alist) - 1.0))
+    else:
+       logging.warning("More than one item needed to calculate RMS, thus returning 0")
+       return 0.
+
+def error_on_mean(alist):
+    '''Calc rms of 1d array'''
+    if len(alist) > 1:
+        listsum = 0
+        for i in alist:
+            if np.isnan(i) or np.isinf(i):
+                continue
+            listsum += (i - nanmean(alist))**2 
         return np.sqrt(listsum/(len(alist) - 1.0))/np.sqrt(float(len(alist)))
     else:
        logging.warning("More than one item needed to calculate RMS, thus returning 0")
@@ -122,12 +135,31 @@ def interpolate_threshold(x, y, thresh, rise=True, start=0):
     #print "x0 = %1.1f\t(thresh - y0) = %1.1f\tdydx = %1.3f\ttime = %1.1f\tdx = %1.1f" % (x[index_low], (thresh - y[index_low]), dydx, time, (x[index_high] - x[index_low])) 
     return time
 
-def calcArea(x,y):
-    """Calc area of pulses"""
-    trapz = np.zeros( len(y[:,0]) )
-    for i in range(len(y[:,0])):
-        trapz[i] = np.trapz(y[i,:],x)
-    return np.mean(trapz), rms(trapz)
+def calcArea(x,y,lower_limit=0.0,upper_limit=0.0):
+    if upper_limit == lower_limit:
+        """Calc area of pulses"""
+        trapz = np.zeros( len(y[:,0]) )
+        for i in range(len(y[:,0])):
+            trapz[i] = np.trapz(y[i,:],x)
+        return np.mean(trapz), rms(trapz), error_on_mean(trapz)
+    
+    else:
+        lower_index =  0
+        upper_index = 0
+        trapz = np.zeros( len(y[:,0]) )
+        
+        for i in range(len(y[:,0])):
+            for j in range(len(x)):
+                if x[j]> lower_limit:
+                    lower_index = j
+                    break
+
+            for j in range(len(x)-1,0,-1):
+                if x[j]< upper_limit:
+                    upper_index = j
+                    break
+            trapz[i] = np.trapz(y[i,lower_index:upper_index],x[lower_index:upper_index])
+        return np.mean(trapz), rms(trapz), error_on_mean(trapz)
 
 def get_gain(applied_volts):
     """Get the gain from the applied voltage.
@@ -213,7 +245,7 @@ def calcWidth(x,y):
             width[i] = second - first
             if np.isinf(width[i]):
                 width[i]=np.nan
-        return nanmean(width), rms(width)
+        return nanmean(width), rms(width), error_on_mean(width)
     else:
         for i in range(len(y[:,0])):
             m = min(y[i,:])
@@ -224,7 +256,7 @@ def calcWidth(x,y):
             width[i] = second - first
             if np.isinf(width[i]):
                 width[i]=np.nan
-        return nanmean(width), rms(width)
+        return nanmean(width), rms(width), error_on_mean(width)
 
 def calcPeak(x,y):
     """Calc min amplitude of pulses"""
