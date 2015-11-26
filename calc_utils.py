@@ -265,11 +265,11 @@ def calcPeak(x,y):
     if f == True:
         for i in range(len(y[:,0])):
             peak[i] = max(y[i,:])
-        return np.mean(peak), rms(peak)
+        return np.mean(peak), rms(peak), error_on_mean(peak)
     else:
         for i in range(len(y[:,0])):
             peak[i] = min(y[i,:])
-        return np.mean(peak), rms(peak)
+        return np.mean(peak), rms(peak), error_on_mean(peak)
 
 def calcSinglePeak(pos_check, y_arr):
     """Calculate peak values for single trace inputs can be positive or negative."""

@@ -26,7 +26,7 @@ def waveform_to_hist(timeform, waveform, data_units, title="hist"):
 
 def plot_area(x, y, name, scale = 1e9,lower_limit=0.0,upper_limit=0.0):
     """Calc area of pulses"""
-    area, areaErr, areaErrorOnMean = calc.calcArea(x,y,lower_limit,upper_limit)
+    area, areaErr, areaErrOnMean = calc.calcArea(x,y,lower_limit,upper_limit)
     bins = np.arange((area-8*areaErr)*scale, (area+8*areaErr)*scale, (areaErr/5)*scale)
     hist = ROOT.TH1D("%s" % name,"%s" % name, len(bins), bins[0], bins[-1])
     hist.SetTitle("Pulse integral")
@@ -34,7 +34,7 @@ def plot_area(x, y, name, scale = 1e9,lower_limit=0.0,upper_limit=0.0):
     if upper_limit == lower_limit:
         for i in range(len(y[:,0])):
             hist.Fill(np.trapz(y[i,:],x)*scale)
-        return hist, area, areaErr
+        return hist, area, areaErr,areaErrOnMean
     else:
         lower_index =  0
         upper_index = 0
@@ -51,7 +51,7 @@ def plot_area(x, y, name, scale = 1e9,lower_limit=0.0,upper_limit=0.0):
                     break
         for i in range(len(y[:,0])):
             hist.Fill(np.trapz(y[i,lower_index:upper_index],x[lower_index:upper_index])*scale)
-        return hist, area, areaErr
+        return hist, area, areaErr, areaErrOnMean
 
 def plot_rise(x, y, name, scale = 1e9):
     """Calc and plot rise time of pulses"""
@@ -118,7 +118,7 @@ def plot_width(x, y, name, scale = 1e9):
     hist.GetXaxis().SetTitle("FWHM (ns)")
     f = calc.positive_check(y)
     if f == True:
-        for i in range(len(y[:,0])):
+        for i in range(len(y[:,0])-1):
             m = max(y[i,:])
             m_index = np.where(y[i,:] == m)[0][0]
             thresh = m*0.5
@@ -134,11 +134,11 @@ def plot_width(x, y, name, scale = 1e9):
             first = calc.interpolate_threshold(x[:m_index], y[i,:m_index], thresh, rise=False)
             second = calc.interpolate_threshold(x[m_index:], y[i,m_index:], thresh, rise=True)
             hist.Fill((second - first)*scale)
-    return hist, width, widthErr
+    return hist, width, widthErr, widthErrOnMean
 
 def plot_peak(x, y, name):
     """Plot pulse heights for array of pulses"""
-    peak, peakErr = calc.calcPeak(x,y)
+    peak, peakErr, peakErrOnMean = calc.calcPeak(x,y)
     bins = np.arange((peak-8*peakErr), (peak+8*peakErr), (peakErr/5.))
     hist = ROOT.TH1D("%s" % name,"%s" % name, len(bins), bins[0], bins[-1])
     hist.SetTitle("Pulse hieght")
@@ -150,7 +150,7 @@ def plot_peak(x, y, name):
     else:
         for i in range(len(y[:,0])-1):
             hist.Fill(min(y[i,:]))
-    return hist, peak, peakErr
+    return hist, peak, peakErr, peakErrOnMean
 
 def plot_jitter(x1, y1, x2, y2, name, scale = 1e9):
     """Calc and plot jitter of pulse pairs"""
