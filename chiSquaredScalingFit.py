@@ -31,7 +31,7 @@ NDF3Scale = 3.
 
 
 
-fileArray = []
+fileArray = ["Idlesweep5_5GSs_0offset_Nov.18_GOOD/NDF 3/dataset/areas.txt","Idlesweep5_5GSs_0offset_Nov.18_GOOD/NDF 2.5/dataset/areas.txt","Idlesweep5_5GSs_0offset_Nov.18_GOOD/NDF2/dataset/areas.txt","Idlesweep5_5GSs_0offset_Nov.18_GOOD/NDF 1.5/dataset/areas.txt","Idlesweep5_5GSs_0offset_Nov.18_GOOD/NDF 1/dataset/areas.txt"]
 labelArray = []
 xCutArray = [27000,25000,22000,15000,8000]
 NDFArray = [3,2.5,2,1.5,1.0]
@@ -47,25 +47,12 @@ lowFitLimits = []
 upFitLimits = []
 dataPlot = plt.figure(0)
 errorPlot = plt.figure(1)
-afterFit = False
-afterFitNum  = 999999999 
-for i in range(1,len(sys.argv)):
-        if sys.argv[i] == "fit":
-            afterFit = True
-            afterFitNum = i+1
-            break
-        fileArray.append(sys.argv[i])
-        doFit.append(False)
-
-for i in range(afterFitNum,len(sys.argv),3):
-        fileArray.append(sys.argv[i])
-        doFit.append(True)
-        lowFitLimits.append(float(sys.argv[i+1]))
-        upFitLimits.append(float(sys.argv[i+2]))
-totYVals = []
+totYValsScaled = []
+totXValsScaled = []
 totXVals = []
+totYVals = []
 totYErr = []
-fitCounter = 0
+
 for iteration in range(len(fileArray)):
     inputFile = open(fileArray[iteration],"r")
     print inputFile
@@ -80,9 +67,6 @@ for iteration in range(len(fileArray)):
     totYVals.append(yVals)
     totXVals.append(xVals)
     totYErr.append(yErrs)
-
-totYValsScaled = []
-totXValsScaled = []
 #doing scaling
 for iteration in range(len(fileArray)):
     if iteration == 0:
@@ -126,43 +110,12 @@ for iteration in range(len(fileArray)):
     print os.path.basename(fileArray[iteration])
     plt.figure(0)
     plt.plot(totXValsScaled[iteration],np.multiply(totYValsScaled[iteration],-1),label=str((labelArray[iteration])))
-    negyValsScaled = np.multiply(totYValsScaled[iteration],-1.0)
-    plt.figure(1)
-    #print np.divide(yErrs,yVals)
-    if doFit[iteration]:
-        plt.figure(0)
-        fitWeights = []
-        for iError in range(len(yErrs)):
-            fitWeights.append(1.0/(yErrs[iError]))
-        lowIndex = 0
-        upIndex = 0
-        
-        for i in range(len(xVals)):
-            if xVals[i] > lowFitLimits[fitCounter]:
-                lowIndex = i 
-                break
-        
-        for i in range(len(xVals)-1,0,-1):
-            if xVals[i] < upFitLimits[fitCounter]:
-                upIndex = i+1
-                break
-       
-        fitCounter += 1
-        fitResults = np.polyfit(xVals[lowIndex:upIndex],np.multiply(yVals[lowIndex:upIndex],-1.0),2,w=fitWeights[lowIndex:upIndex],full=True)
-        fitValues = fitResults[0]
-        chi_squared = fitResults[1]
-        poly = np.poly1d(fitValues)
-        plt.plot(xVals[lowIndex:upIndex],poly(xVals[lowIndex:upIndex]),label="Fit to: "+(labelArray[iteration]))
-        reduced_chi_squared = chi_squared/(len(xVals[lowIndex:upIndex])-len(fitValues))
-        print "Parameters for fit to: "+str(os.path.basename(fileArray[iteration]))+"    "+str(fitValues)
-        print "Number of Degrees of Freedom is: "+str(len(xVals[lowIndex:upIndex])-len(fitValues))
-        print "chi squared is: "+str(chi_squared)
-        print "Reduced chi squared is: "+str(reduced_chi_squared)
-        print "Likelihood of fit for no aging is is: "+str(ROOT.TMath.Prob(chi_squared,len(xVals[lowIndex:upIndex])-len(fitValues)))
 
 plt.figure(0)
 plt.legend(loc="lower right")
 plt.figure(1)
+plt.xlabel("NDF Values")
+plt.ylabel("Fitted NDF Values")
 print fitNDFs
 plt.plot(NDFArray,fitNDFs)
 plt.show()

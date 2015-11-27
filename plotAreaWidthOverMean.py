@@ -61,13 +61,15 @@ for iteration in range(len(fileArray)):
 for iteration in range(len(fileArray)):
     print fileArray[iteration]
     print os.path.basename(fileArray[iteration])
-    print totYVals[iteration]
+    print len(totYVals[iteration])
+    print len(totXVals[iteration])
+    print len(totYErr[iteration])
     plt.figure(0)
-    plt.errorbar(xVals,np.multiply(totYVals[iteration],-1),yerr=totYErr[iteration],label=str((labelArray[iteration])))
+    plt.errorbar(totXVals[iteration],np.multiply(totYVals[iteration],-1),yerr=totYErr[iteration],label=str((labelArray[iteration])))
     negyVals = np.multiply(totYVals[iteration],-1.0)
     #print np.divide(yErrs,yVals)
     plt.figure(1)
-    plt.plot(xVals,np.divide(totYWidth[iteration],negyVals),label="Width over area: "+str(labelArray[iteration]))
+    plt.plot(totXVals[iteration],np.divide(totYWidth[iteration],negyVals),label="Width over area: "+str(labelArray[iteration]))
     if doFit[iteration]:
         plt.figure(0)
         fitWeights = []

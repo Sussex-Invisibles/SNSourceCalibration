@@ -83,17 +83,24 @@ for iteration in range(len(fileArray)):
                 break
        
         fitCounter += 1
-        fitResults = np.polyfit(xVals[lowIndex:upIndex],np.multiply(yVals[lowIndex:upIndex],-1.0),2,w=fitWeights[lowIndex:upIndex],full=True)
+        fitResults = np.polyfit(totXVals[iteration][lowIndex:upIndex],np.multiply(totYVals[iteration][lowIndex:upIndex],-1.0),1,w=fitWeights[lowIndex:upIndex],full=True)
         fitValues = fitResults[0]
         chi_squared = fitResults[1]
         poly = np.poly1d(fitValues)
-        plt.plot(xVals[lowIndex:upIndex],poly(xVals[lowIndex:upIndex]),label="Fit to: "+(labelArray[iteration]))
-        reduced_chi_squared = chi_squared/(len(xVals[lowIndex:upIndex])-len(fitValues))
+        roots = (poly-.1).roots
+        cross_limit = 0
+        for i in range(len(xVals)-1,0,-1):
+            if poly(xVals[i])<0:
+                cross_limit = i
+                break
+
+        plt.plot(totXVals[iteration][cross_limit-2:upIndex],poly(totXVals[iteration][cross_limit-2:upIndex]),label="Fit to: "+(labelArray[iteration]))
+        reduced_chi_squared = chi_squared/(len(totXVals[iteration][lowIndex:upIndex])-len(fitValues))
         print "Parameters for fit to: "+str(os.path.basename(fileArray[iteration]))+"    "+str(fitValues)
-        print "Number of Degrees of Freedom is: "+str(len(xVals[lowIndex:upIndex])-len(fitValues))
+        print "Number of Degrees of Freedom is: "+str(len(totXVals[lowIndex:upIndex])-len(fitValues))
         print "chi squared is: "+str(chi_squared)
         print "Reduced chi squared is: "+str(reduced_chi_squared)
-        print "Likelihood of fit for no aging is is: "+str(ROOT.TMath.Prob(chi_squared,len(xVals[lowIndex:upIndex])-len(fitValues)))
+        print "Likelihood of fit for no aging is is: "+str(ROOT.TMath.Prob(chi_squared,len(totXVals[lowIndex:upIndex])-len(fitValues)))
 
 plt.figure(0)
 plt.legend(loc="lower right")
