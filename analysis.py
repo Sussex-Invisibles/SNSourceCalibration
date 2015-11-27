@@ -33,8 +33,8 @@ folders.sort(key=int)
 print folders
 for dacFolder in folders:
     print "THIS IS DAC FOLDER: "+str(dacFolder)
-    x,y = calc_utils.readTRCFiles(dacFolder,True)
-    output = ROOT.TFile(dacFolder+"TIMECUTANDSHIFTED.root","recreate")
+    x,y = calc_utils.readTRCFiles(dacFolder,False)
+    output = ROOT.TFile(dacFolder+".root","recreate")
     areaHisto, area, areaErr,areaErrOnMean = root_utils.plot_area(x,y,"area",lower_limit=9.e-8,upper_limit=9.e-8)
     widthHisto, width, widthErr, widthErrOnMean = root_utils.plot_width(x,y,"FWHM")
     peakHisto, meanPeak, peakErr, peakErrOnMean = root_utils.plot_peak(x,y,"peak")
