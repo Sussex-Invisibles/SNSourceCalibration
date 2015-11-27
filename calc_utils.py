@@ -69,7 +69,7 @@ def readPickleChannel(file, channel_no, correct_offset=True):
     y = np.zeros( (count, len(xRaw)) )
     for i, ent in enumerate(yRaw):
         if correct_offset == True:
-            y[i, :] = ent  - np.mean(ent[0:20])
+            y[i, :] = ent  - np.mean(ent[0:100])
         else:
             y[i, :] = ent  
     return x,y

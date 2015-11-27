@@ -20,6 +20,7 @@ FWHMValues = []
 FWHMErrors = []
 areaValues = []
 areaErrors = []
+areaFWHM = []
 topFolder = sys.argv[1]
 os.chdir(topFolder)
 items  =  os.listdir(".")
@@ -33,11 +34,11 @@ print folders
 for dacFolder in folders:
     print "THIS IS DAC FOLDER: "+str(dacFolder)
     x,y = calc_utils.readTRCFiles(dacFolder,True)
-    output = ROOT.TFile(dacFolder+".root","recreate")
+    output = ROOT.TFile(dacFolder+"TIMECUTANDSHIFTED.root","recreate")
     areaHisto, area, areaErr,areaErrOnMean = root_utils.plot_area(x,y,"area",lower_limit=9.e-8,upper_limit=9.e-8)
     widthHisto, width, widthErr, widthErrOnMean = root_utils.plot_width(x,y,"FWHM")
     peakHisto, meanPeak, peakErr, peakErrOnMean = root_utils.plot_peak(x,y,"peak")
-    photonHisto = ROOT.TH1D("Photon Count Histo","Photon Count Histo",areaHisto.GetNbinsX(),0,127942272714.0)
+    photonHisto = ROOT.TH1D("Photon Count Histo","Photon Count Histo",areaHisto.GetNbinsX(),0,127942272714.0*100)
     for entry in areaHisto:
         photonCount = calc_utils.get_photons(entry,1.0)
         photonHisto.Fill(photonCount) 
@@ -53,6 +54,9 @@ for dacFolder in folders:
     FWHMErrors.append(widthErrOnMean)
     areaValues.append(area)
     areaErrors.append(areaErrOnMean)
+    print "Area MEAN is: "+str(area)
+    print "Area RMS is: "+str(areaErr)
+    areaFWHM.append(2*np.sqrt(2*np.log(2))*areaErr)
     dacValues.append(float(dacFolder))
 
 areaFile = open("areas.txt","w")
@@ -60,7 +64,7 @@ peakFile = open("peaks.txt","w")
 widthFile = open("FWHM.txt","w")
 
 for i in range(len(areaValues)):
-    areaLine = str(dacValues[i])+" "+str(areaValues[i])+" "+str(areaErrors[i])+"\n"
+    areaLine = str(dacValues[i])+" "+str(areaValues[i])+" "+str(areaErrors[i])+" "+str(areaFWHM[i])+"\n"
     peakLine = str(dacValues[i])+" "+str(peakValues[i])+" "+str(peakErrors[i])+"\n"
     FWHMLine = str(dacValues[i])+" "+str(FWHMValues[i])+" "+str(FWHMErrors[i])+"\n"
     areaFile.write(areaLine)
