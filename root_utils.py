@@ -31,10 +31,17 @@ def plot_area(x, y, name, scale = 1e9,lower_limit=0.0,upper_limit=0.0):
     hist = ROOT.TH1D("%s" % name,"%s" % name, len(bins), bins[0], bins[-1])
     hist.SetTitle("Pulse integral")
     hist.GetXaxis().SetTitle("Integrated area (V.ns)")
+    photonList = []
     if upper_limit == lower_limit:
         for i in range(len(y[:,0])):
-            hist.Fill(np.trapz(y[i,:],x)*scale)
-        return hist, area, areaErr,areaErrOnMean
+            TraceArea = np.trapz(y[i,:],x)
+            hist.Fill(TraceArea*scale)
+            photonList.append(calc.get_photons(TraceArea,1.0))
+        photonHisto = ROOT.TH1D("Photon Count Histo","Photon Count Histo",hist.GetNbinsX(),np.amin(photonList),np.amax(photonList))
+        for photonCount in photonList:
+            photonHisto.Fill(photonCount)
+        return hist,photonHisto, area, areaErr,areaErrOnMean
+    
     else:
         lower_index =  0
         upper_index = 0
@@ -50,8 +57,14 @@ def plot_area(x, y, name, scale = 1e9,lower_limit=0.0,upper_limit=0.0):
                     upper_index = j
                     break
         for i in range(len(y[:,0])):
-            hist.Fill(np.trapz(y[i,lower_index:upper_index],x[lower_index:upper_index])*scale)
-        return hist, area, areaErr, areaErrOnMean
+            TraceArea = np.trapz(y[i,lower_index:upper_index],x[lower_index:upper_index])
+            hist.Fill(TraceArea*scale)
+            photonList.append(calc.get_photons(TraceArea,1.0))
+        photonHisto = ROOT.TH1D("Photon Count Histo","Photon Count Histo",hist.GetNbinsX(),np.amin(photonList),np.amax(photonList))
+        for photonCount in photonList:
+            photonHisto.Fill(photonCount)
+       
+        return hist,photonHisto, area, areaErr, areaErrOnMean
 
 def plot_rise(x, y, name, scale = 1e9):
     """Calc and plot rise time of pulses"""
