@@ -38,11 +38,15 @@ for dacFolder in folders:
     areaHisto, area, areaErr,areaErrOnMean = root_utils.plot_area(x,y,"area",lower_limit=9.e-8,upper_limit=9.e-8)
     widthHisto, width, widthErr, widthErrOnMean = root_utils.plot_width(x,y,"FWHM")
     peakHisto, meanPeak, peakErr, peakErrOnMean = root_utils.plot_peak(x,y,"peak")
-    photonHisto = ROOT.TH1D("Photon Count Histo","Photon Count Histo",areaHisto.GetNbinsX(),0,127942272714.0*100)
-    for entry in areaHisto:
-        photonCount = calc_utils.get_photons(entry,1.0)
-        photonHisto.Fill(photonCount) 
+    photonList = []
+    for binIter in range(len(areaHisto)):
+        for numEntries in range(int(areaHisto.GetBinContent(binIter))):
+            photonList.append(calc_utils.get_photons(areaHisto.GetBinCenter(binIter),1.0))
     #numSqrt = np.sqrt(len(os.listdir(dacFolder)))
+    print "Photon count is: "+str(len(photonList))
+    photonHisto = ROOT.TH1D("Photon Count Histo","Photon Count Histo",areaHisto.GetNbinsX(),np.amin(photonList),np.amax(photonList))
+    for count in photonList:
+        photonHisto.Fill(count)
     photonHisto.Write()
     areaHisto.Write()
     widthHisto.Write()
