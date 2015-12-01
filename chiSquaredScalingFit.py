@@ -49,6 +49,7 @@ dataPlot = plt.figure(0)
 errorPlot = plt.figure(1)
 totYValsScaled = []
 totXValsScaled = []
+totYErrScaled = []
 totXVals = []
 totYVals = []
 totYErr = []
@@ -72,22 +73,28 @@ for iteration in range(len(fileArray)):
     if iteration == 0:
         xValSliced = []
         yValSliced = []
+        yErrSliced = []
         for i in range(len(totXVals[iteration])):
             if totXVals[iteration][i] > xCutArray[iteration]:
                 xValSliced = totXVals[iteration][:i]
                 yValSliced = totYVals[iteration][:i]
+                yErrSliced = totYErr[iteration][:i]
                 break
         totXValsScaled.append(xValSliced)
         yScaled = scaleFunction(yValSliced,NDF3Offset,NDF3Scale)
+        yErrScaled = scaleFunction(yErrSliced,NDF3Offset,NDF3Scale)
         totYValsScaled.append(yScaled)
+        totYErrScaled.append(yErrScaled)
 
     else:
         xValSliced = []
         yValSliced = []
+        yErrSliced = []
         for i in range(len(totXVals[iteration])):
             if totXVals[iteration][i] > xCutArray[iteration]:
                 xValSliced = totXVals[iteration][:i]
                 yValSliced = totYVals[iteration][:i]
+                yErrSliced = totYErr[iteration][:i]
                 break
         totXValsScaled.append(xValSliced)
         #minim = minimize(getChiSquared,(0,NDFArray[iteration]),args=(yValSliced,totYValsScaled[0][:len(yValSliced)]),method= "TNC",bounds=[(None,None),(0,3)], options={'maxiter':10000,"maxfun":10000})
@@ -95,7 +102,9 @@ for iteration in range(len(fileArray)):
 
         offsetNDFValue = minim
         yScaled = scaleFunction(yValSliced,offsetNDFValue[0],offsetNDFValue[1])
+        yErrScaled = scaleFunction(yErrSliced,offsetNDFValue[0],offsetNDFValue[1])
         totYValsScaled.append(yScaled)
+        totYErrScaled.append(yErrScaled)
         print "The fitted NDF Value is: "+str(offsetNDFValue[1])
         print "The y offset is: "+str(offsetNDFValue[0])
         fitNDFs.append(offsetNDFValue[1])
@@ -108,7 +117,7 @@ for iteration in range(len(fileArray)):
     print os.path.basename(fileArray[iteration])
     with open(os.path.split(fileArray[iteration])[0]+"SCALEDDATA"+os.path.basename(fileArray[iteration]),"w") as outputFile:
         for scaledVals in range(len(totXValsScaled[iteration])):
-            outputFile.write(str(totXValsScaled[iteration][scaledVals])+" "+str(totYValsScaled[iteration][scaledVals])+"\n")
+            outputFile.write(str(totXValsScaled[iteration][scaledVals])+" "+str(totYValsScaled[iteration][scaledVals])+" "+str(totYErrScaled[iteration][scaledVals])+"\n")
         outputFile.close()
     plt.figure(0)
     plt.plot(totXValsScaled[iteration],np.multiply(totYValsScaled[iteration],-1),label=str((labelArray[iteration])))
