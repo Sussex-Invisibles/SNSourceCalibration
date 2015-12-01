@@ -79,8 +79,6 @@ for iteration in range(len(fileArray)):
                 break
         totXValsScaled.append(xValSliced)
         yScaled = scaleFunction(yValSliced,NDF3Offset,NDF3Scale)
-        print yValSliced
-        print yScaled
         totYValsScaled.append(yScaled)
 
     else:
@@ -91,15 +89,15 @@ for iteration in range(len(fileArray)):
                 xValSliced = totXVals[iteration][:i]
                 yValSliced = totYVals[iteration][:i]
                 break
-        print xValSliced
         totXValsScaled.append(xValSliced)
         #minim = minimize(getChiSquared,(0,NDFArray[iteration]),args=(yValSliced,totYValsScaled[0][:len(yValSliced)]),method= "TNC",bounds=[(None,None),(0,3)], options={'maxiter':10000,"maxfun":10000})
         minim = fmin(getChiSquared,(0,NDFArray[iteration]),args=(yValSliced,totYValsScaled[0][:len(yValSliced)]), maxiter=10000,maxfun=10000)
 
-        print minim
         offsetNDFValue = minim
         yScaled = scaleFunction(yValSliced,offsetNDFValue[0],offsetNDFValue[1])
         totYValsScaled.append(yScaled)
+        print "The fitted NDF Value is: "+str(offsetNDFValue[1])
+        print "The y offset is: "+str(offsetNDFValue[0])
         fitNDFs.append(offsetNDFValue[1])
         
 
@@ -108,6 +106,10 @@ for iteration in range(len(fileArray)):
 for iteration in range(len(fileArray)):
     print fileArray[iteration]
     print os.path.basename(fileArray[iteration])
+    with open(os.path.split(fileArray[iteration])[0]+"SCALEDDATA"+os.path.basename(fileArray[iteration]),"w") as outputFile:
+        for scaledVals in range(len(totXValsScaled[iteration])):
+            outputFile.write(str(totXValsScaled[iteration][scaledVals])+" "+str(totYValsScaled[iteration][scaledVals])+"\n")
+        outputFile.close()
     plt.figure(0)
     plt.plot(totXValsScaled[iteration],np.multiply(totYValsScaled[iteration],-1),label=str((labelArray[iteration])))
 
