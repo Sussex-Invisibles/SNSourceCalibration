@@ -1,4 +1,4 @@
-###############################################
+##############################################
 # Functions to read in pickled scope traces
 # and perform standard measurements.
 # 
@@ -177,7 +177,7 @@ def get_photons(volts_seconds,applied_volts):
     Can accept -ve or +ve pulse
     """
     impedence = 50.0 
-    eV = (6.626e-34 * 3e8) / (406e-9)
+    eV = 1.602e-19
     qe = 0.34142# @ 501nm
     gain = get_gain(applied_volts)
     photons = np.fabs(volts_seconds) / (impedence * eV * gain * qe)
